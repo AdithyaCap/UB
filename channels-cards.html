@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Union Bank - Channels & Cards</title>
+<style>
+:root{--blue:#064789;--navy:#073f80;--orange:#ff9418;--green:#168447;--bg:#f3f6fb;--line:#d8e2f0;--muted:#65758d;--text:#16314f}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.top{background:#fff;border-top:6px solid #202020;border-bottom:3px solid var(--orange);padding:12px 24px;display:flex;align-items:center;gap:24px;min-height:78px}
+.logo{font-size:31px;font-weight:900;letter-spacing:-1.6px;color:#064789;font-style:italic;white-space:nowrap}.logo span{color:#ff9418}.sep{height:28px;border-left:1px solid #bfd0e4}.heading{font-size:18px;color:#083f80}.branch{margin-left:auto;color:#62738c;font-size:13px}
+.meta{background:#084789;color:#fff;display:flex;flex-wrap:wrap;gap:34px;padding:16px 22px;font-size:15px}.meta b{color:#fff}.status{background:var(--orange);color:#083f80;padding:7px 15px;border-radius:20px;font-weight:bold;font-size:13px}
+.steps{background:#fff;border-bottom:1px solid var(--line);padding:0 20px;overflow-x:auto}.steps ol{display:flex;list-style:none;margin:0;padding:0;min-width:850px}.steps li{flex:1}.step{border:0;background:none;padding:16px 10px;display:flex;align-items:center;gap:10px;width:100%;white-space:nowrap;font-size:15px;color:#536783;border-bottom:3px solid transparent;text-align:left}.step-index{display:inline-flex;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;background:#e6edf7;color:#42618a;font-size:13px;flex-shrink:0}.step.done{color:var(--green);font-weight:600}.step.done .step-index{background:var(--green);color:white;font-size:17px}.step.active{color:#064789;font-weight:700;border-bottom-color:var(--orange)}.step.active .step-index{background:#064789;color:white}
+main{max-width:1240px;margin:26px auto;padding:0 18px 40px}.intro{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:17px 20px;box-shadow:0 2px 5px #1232;margin-bottom:20px}.intro h1{font-size:21px;margin:0;color:#064789}.intro p{margin:5px 0 0;color:var(--muted);font-size:13px}.ref{color:#60738d;font-size:13px}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;margin-bottom:20px;box-shadow:0 2px 5px #1231;overflow:hidden}.panel-head{padding:17px 20px;border-bottom:1px solid var(--line);border-left:5px solid var(--orange);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2{font-size:17px;color:#064789;margin:0}.panel-body{padding:20px}.hint{font-size:13px;color:var(--muted);line-height:1.5}.account-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.account{border:1px solid var(--line);border-radius:9px;padding:14px;background:#f9fbfe}.account strong{display:block;color:#064789;margin-bottom:7px}.account .acct-num{font-size:13px;color:#63758b}.pill{display:inline-block;background:#e6f5ec;color:#167344;border-radius:15px;padding:4px 8px;font-size:11px;font-weight:bold;margin-top:8px}
+.channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}.channel{border:1px solid var(--line);border-radius:10px;padding:16px}.channel h3{margin:0 0 8px;color:#064789;font-size:15px}.channel p{margin:0 0 12px;color:var(--muted);font-size:12px}.field{margin-top:13px}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}.field select,.field input{width:100%;border:1px solid #c8d5e5;border-radius:7px;padding:10px;background:white;font:inherit;color:var(--text)}.choice-row{display:flex;gap:12px;flex-wrap:wrap}.choice{display:flex;align-items:center;gap:7px;border:1px solid #d4dfed;padding:9px 11px;border-radius:7px;font-size:13px;cursor:pointer}.choice input{accent-color:#064789}.card-person{border:1px solid var(--line);border-radius:10px;margin:0 0 14px;overflow:hidden}.person-head{background:#f0f5fc;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}.person-head strong{color:#064789}.person-body{padding:16px}.card-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.option{border:1px solid var(--line);border-radius:8px;padding:13px}.option.selected{border-color:#0b5ca8;background:#f3f8ff}.option-title{font-weight:700;color:#064789;margin-bottom:7px}.masked{font-family:monospace;letter-spacing:1.5px;font-size:15px}.note{background:#fff7e9;border:1px solid #ffe0ae;border-radius:8px;padding:12px 14px;color:#77501c;font-size:13px;line-height:1.5;margin-top:14px}.actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:8px}.btn{border:1px solid #c5d2e2;border-radius:7px;padding:11px 18px;font-weight:bold;cursor:pointer;background:white;color:#064789}.btn.primary{background:#064789;color:white;border-color:#064789}.btn.orange{background:var(--orange);border-color:var(--orange);color:#17324e}.hidden{display:none!important}.success{display:none;background:#e8f7ee;border:1px solid #a6ddba;color:#176b3c;border-radius:8px;padding:12px;margin-bottom:14px;font-size:13px}
+@media(max-width:650px){.top{padding:12px;gap:12px}.logo{font-size:23px}.heading{font-size:14px}.meta{gap:12px;font-size:12px;padding:12px}.step{font-size:12px;padding:12px 7px}.step-index{width:25px;height:25px}main{margin:16px auto;padding:0 10px}.panel-body{padding:14px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="logo">UB<span>●</span> UNIONBANK</div><div class="sep"></div><div class="heading">Existing Customer – Account Opening</div><div class="branch">Branch: <b>Matara</b></div></header>
+<div class="meta"><span>Workflow Reference Number: <b>202600012345</b></span><span>User Role: <b>Branch inputter</b></span><span>Branch: <b>Matara</b></span><span>CIF Number: <b>CIF000987654</b></span><span class="status">In Progress</span></div>
+<nav class="steps" aria-label="Steps"><ol>
+<li><button class="step done" type="button" data-page="./CifDetailsTab%201.html"><span class="step-index">✓</span>CIF Details</button></li>
+<li><button class="step done" type="button" data-page="./AmlPepCheckTab%203.html"><span class="step-index">✓</span>AML &amp; PEP Check</button></li>
+<li><button class="step done" type="button" data-page="./AccountInformationTab%204.html"><span class="step-index">✓</span>Account Information</button></li>
+<li><button class="step active" type="button" aria-current="step"><span class="step-index">04</span>Channels &amp; Cards</button></li>
+<li><button class="step" type="button" data-page="./RiskAnalysisTab%205.html"><span class="step-index">05</span>Risk Analysis</button></li>
+<li><button class="step" type="button" data-page="./BankingConsentTab%206.html"><span class="step-index">06</span>Banking Consent Details</button></li>
+</ol></nav>
+<main>
+<div class="intro"><div><h1>Channels &amp; Cards</h1><p>Choose the banking channels and card arrangements for each selected account and joint holder.</p></div><div class="ref">Step 04 of 06 · Customer CIF000987654</div></div>
+<div class="success" id="success">Your channel and card selections have been saved in this page.</div>
+<section class="panel"><div class="panel-head"><h2>Selected Accounts</h2><span class="hint">From Account Information</span></div><div class="panel-body">
+<p class="hint">These sample accounts are shown as selected in the previous step. Channels below can be configured for each eligible account.</p>
+<div class="account-grid">
+<div class="account"><strong>Regular Savings Account</strong><div class="acct-num">Account ending ·· 4821</div><span class="pill">Selected</span></div>
+<div class="account"><strong>Current Account</strong><div class="acct-num">Account ending ·· 1068</div><span class="pill">Selected</span></div>
+<div class="account"><strong>Fixed Deposit</strong><div class="acct-num">New account application</div><span class="pill">Selected</span></div>
+</div>
+</div></section>
+<section class="panel"><div class="panel-head"><h2>Channels by Account</h2><span class="hint">Select the services required for each account</span></div><div class="panel-body">
+<div class="channels">
+<div class="channel"><h3>Regular Savings ·· 4821</h3><p>Choose channel access for this account.</p><div class="field"><label class="choice"><input type="checkbox" checked> Internet Banking</label></div><div class="field"><label class="choice"><input type="checkbox" checked> Mobile Banking</label></div><div class="field"><label class="choice"><input type="checkbox" checked> SMS Alerts</label></div><div class="field"><label class="choice"><input type="checkbox"> Phone Banking</label></div></div>
+<div class="channel"><h3>Current Account ·· 1068</h3><p>Choose channel access for this account.</p><div class="field"><label class="choice"><input type="checkbox" checked> Internet Banking</label></div><div class="field"><label class="choice"><input type="checkbox"> Mobile Banking</label></div><div class="field"><label class="choice"><input type="checkbox" checked> SMS Alerts</label></div><div class="field"><label class="choice"><input type="checkbox"> Phone Banking</label></div></div>
+<div class="channel"><h3>Fixed Deposit</h3><p>Term deposit servicing options.</p><div class="field"><label class="choice"><input type="checkbox" checked> SMS / Maturity Alerts</label></div><div class="field"><label class="choice"><input type="checkbox"> Internet Banking View Access</label></div></div>
+</div></div></section>
+<section class="panel"><div class="panel-head"><h2>Individual Debit Card</h2><span class="hint">Select one option for the primary customer</span></div><div class="panel-body">
+<div class="card-options">
+<label class="option"><div class="option-title"><input type="radio" name="primaryCard" value="none"> No Card</div><div class="hint">Do not issue a new or replacement card.</div></label>
+<label class="option selected"><div class="option-title"><input type="radio" name="primaryCard" value="existing" checked> Existing Card</div><div class="hint">Keep the customer's existing card linked where eligible.</div><p class="masked">•••• •••• •••• 4826</p><div class="hint">Only the last four digits are displayed.</div></label>
+<label class="option"><div class="option-title"><input type="radio" name="primaryCard" value="new"> Issue New Card</div><div class="hint">Request a new debit card for the selected eligible account.</div><div class="field"><label>Card type</label><select><option>Visa Debit</option><option>Mastercard Debit</option></select></div></label>
+</div>
+<div class="note">For security, the full card number is never displayed. Existing card details are masked and only the final four digits are visible.</div>
+</div></section>
+<section class="panel"><div class="panel-head"><h2>Joint Holder Cards</h2><span class="hint">One card arrangement per joint holder</span></div><div class="panel-body">
+<div class="field" style="max-width:320px;margin-top:0"><label for="jointCount">Number of joint holders</label><select id="jointCount"><option value="0">0 joint holders</option><option value="1" selected>1 joint holder</option><option value="2">2 joint holders</option><option value="3">3 joint holders</option><option value="4">4 joint holders</option></select></div>
+<p class="hint">The form below creates a separate card choice for each joint holder. Existing cards are shown masked; choose no card, keep an existing card, or issue a new card.</p>
+<div id="jointCards"></div>
+<div class="note">Mixed scenario supported: for example, Joint Holder 1 can retain an existing card ending <b>7314</b>, while Joint Holder 2 receives a new card. Card details are masked to show only the last four digits.</div>
+</div></section>
+<div class="actions"><button class="btn" id="previous">← Previous: Account Information</button><div><button class="btn" id="draft">Save as Draft</button> <button class="btn primary" id="next">Next: Risk Analysis →</button></div></div>
+</main>
+<script>
+const jointCount=document.getElementById('jointCount');
+const jointCards=document.getElementById('jointCards');
+function renderJointCards(){
+ const count=Number(jointCount.value);
+ jointCards.innerHTML='';
+ for(let i=1;i<=count;i++){
+  const existing=i===1?'•••• •••• •••• 7314':i===2?'•••• •••• •••• 9052':'No existing card on record';
+  const defaultChoice=i===1?'existing':i===2?'new':'none';
+  const card=document.createElement('div');card.className='card-person';
+  card.innerHTML=`<div class="person-head"><strong>Joint Holder ${i}</strong><span class="hint">Card arrangement ${String(i).padStart(2,'0')}</span></div>
+  <div class="person-body"><div class="card-options">
+   <label class="option ${defaultChoice==='none'?'selected':''}"><div class="option-title"><input type="radio" name="joint${i}" value="none" ${defaultChoice==='none'?'checked':''}> No Card</div><div class="hint">No card will be issued.</div></label>
+   <label class="option ${defaultChoice==='existing'?'selected':''}"><div class="option-title"><input type="radio" name="joint${i}" value="existing" ${defaultChoice==='existing'?'checked':''} ${existing.includes('No existing')?'disabled':''}> Existing Card</div><div class="masked">${existing.includes('No existing')?'—':existing}</div><div class="hint">${existing.includes('No existing')?'No existing card found for this holder.':'Only the last four digits are shown.'}</div></label>
+   <label class="option ${defaultChoice==='new'?'selected':''}"><div class="option-title"><input type="radio" name="joint${i}" value="new" ${defaultChoice==='new'?'checked':''}> Issue New Card</div><div class="hint">Create a new card request for this joint holder.</div><div class="field"><label>Card type</label><select><option>Visa Debit</option><option>Mastercard Debit</option></select></div></label>
+  </div></div>`;
+  jointCards.appendChild(card);
+ }
+ jointCards.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',e=>{
+  const group=e.target.closest('.card-options');group.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));e.target.closest('.option').classList.add('selected');
+ }));
+}
+jointCount.addEventListener('change',renderJointCards);renderJointCards();
+document.querySelectorAll('input[name=primaryCard]').forEach(r=>r.addEventListener('change',e=>{
+ document.querySelectorAll('input[name=primaryCard]').forEach(x=>x.closest('.option').classList.toggle('selected',x.checked));
+}));
+document.querySelectorAll('.steps [data-page]').forEach(b=>b.addEventListener('click',()=>location.href=b.dataset.page));
+document.getElementById('previous').onclick=()=>location.href='./AccountInformationTab%204.html';
+document.getElementById('next').onclick=()=>location.href='./RiskAnalysisTab%205.html';
+document.getElementById('draft').onclick=()=>{document.getElementById('success').style.display='block';window.scrollTo({top:0,behavior:'smooth'});};
+</script>
+</body>
+</html>

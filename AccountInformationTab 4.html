@@ -169,8 +169,6 @@
       .input[readonly] { background: var(--navy-tint); color: var(--muted); }
       .field-error { display: block; margin-top: 4px; font-size: 0.72rem; color: var(--red); }
 
-      .auto-note { grid-column: 1 / -1; margin: 0; font-size: 0.76rem; color: var(--muted); }
-
       .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
       .controls-row { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
       .radio { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-size: 0.9rem; }
@@ -329,13 +327,9 @@ textarea.input{resize:vertical}
 .choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .choice{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-weight:600}
 .choice:has(input:checked){border-color:var(--navy);background:var(--navy-tint)}.choice input{accent-color:var(--navy);width:17px;height:17px}
-.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.tile{padding:14px;border:1px dashed var(--border-strong);border-radius:8px;background:#f8fafd;text-align:center}.tile.up{border-color:#9bd1b0;background:var(--green-tint)}
-.fname{font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:6px 0 10px}
-.sigbox{border:1px solid var(--border);border-radius:8px;padding:12px;background:#fff;min-height:110px}.sigbox img{max-width:100%;max-height:90px;display:block}
 .sub{grid-column:1/-1;margin:18px 0 10px;padding-top:12px;border-top:1px solid var(--border);font-size:.9rem;color:var(--navy)}
 .stack{display:grid;gap:16px}.modal.pv{max-width:780px}
-@media(max-width:860px){.choices{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles{grid-template-columns:1fr}}
+@media(max-width:860px){.choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head><body>
 <header class="topbar">
       <div class="brand-row">
@@ -361,8 +355,6 @@ textarea.input{resize:vertical}
 <section class="card"><div class="card-header"><span>💰</span><h2>Existing Customer Accounts</h2></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Account Number</th><th>Account Name</th><th>Account Type</th><th>Currency</th><th style="text-align:right">Available Balance (LKR)</th><th>Status</th><th>Branch</th></tr></thead><tbody id="acc-rows"></tbody></table></div></div></section>
 <section class="card"><div class="card-header"><span>🏦</span><h2>Select Account Type(s) to Open</h2></div><div class="card-body"><div class="choices" id="choices"></div></div></section>
 <div id="panels" class="stack"></div>
-<div id="channels" class="stack"></div>
-<section class="card"><div class="card-header"><span>🪪</span><h2>Customer Verification Documents <span class="required-mark">(Mandatory)</span></h2></div><div class="card-body"><div class="tiles" id="tiles"></div><div id="tally"></div></div></section>
 <section class="card"><div class="card-header"><span>📎</span><h2>Other Documents</h2></div><div class="card-body"><div class="row"><div class="field"><label for="od-name">Document name</label><input id="od-name" class="input" placeholder="e.g. Utility bill"></div><button class="btn btn-outline" type="button" data-act="pickother">Upload other document</button></div><p class="hint" style="margin-top:8px">PDF, PNG or JPG, up to 10 MB. Add as many as you need.</p></div></section>
 <section class="card"><div class="card-header"><span>🗂️</span><h2>Uploaded Documents</h2></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Document Type</th><th>File Name</th><th>Uploaded On</th><th>Uploaded By</th><th>Status</th><th></th></tr></thead><tbody id="doc-rows"></tbody></table></div></div></section>
 </main>
@@ -371,9 +363,9 @@ textarea.input{resize:vertical}
 <div id="toast" class="toast" role="status" style="display:none"></div>
 <div id="modal" class="modal-backdrop" style="display:none"><div id="modal-box" class="modal pv" role="dialog" aria-modal="true" aria-labelledby="m-title"><div class="modal-header"><h3 id="m-title"></h3><button id="m-x" class="close-btn" type="button" aria-label="Close">✕</button></div><div id="m-body" class="mbody"></div></div></div>
 <script>
-/* Tab order: 1 CIF Details, 2 AML & PEP Check, 3 Account Information, 4 Risk Analysis, 5 Banking Consent Details */
-const PAGES={cif:'./CifDetailsTab%201.html',aml:'./AmlPepCheckTab%203.html',risk:'./RiskAnalysisTab%205.html',consent:'./BankingConsentTab%206.html'};
-/* Set to true to block Next until the required account, nominee and document details are complete. */
+/* Tab order: 1 CIF Details, 2 AML & PEP Check, 3 Account Information, 4 Channels & Cards, 5 Risk Analysis, 6 Banking Consent Details */
+const PAGES={cif:'./CifDetailsTab%201.html',aml:'./AmlPepCheckTab%203.html',risk:'./RiskAnalysisTab%205.html',channels:'./channels-cards.html',consent:'./BankingConsentTab%206.html'};
+/* Set to true to block Next until the required account and nominee details are complete. */
 const ENFORCE_RULES=false;
 const $=i=>document.getElementById(i);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -385,22 +377,19 @@ $('m-x').onclick=closeM;$('modal').onclick=e=>{if(e.target.id==='modal')closeM()
 
 /* ---------- data ---------- */
 const ACC=[['001-1-0012345','Savings Account',250000],['001-1-0098765','Current Account',1150000],['001-1-0036987','Fixed Deposit',500000]].map(([no,type,bal])=>({no,type,bal}));
-const BR=['Main Branch (001)','Matara Branch (014)','Colombo Fort Branch (002)','Kandy Branch (021)'];
 const SRC=['Salary','Business Income','Savings','Inheritance','Other'],REL=['Spouse','Son','Daughter','Parent','Sibling','Other'],CUR=['LKR','USD','EUR','GBP'],OPS=['Single','Either or Survivor','Jointly'],STAT=['Verified','Pending','Not Available'];
 const FUND=ACC.map(a=>`${a.no} - ${a.type} (LKR ${money(a.bal)})`);
 const CUST={'199012345678':{name:'Anna Maria Perera',cif:'CIF000123456',addr:'12 Temple Road, Kandy'},'200012345678':{name:'John Michael Perera',cif:'CIF000987654',addr:'45 Galle Road, Matara'}};
 const f=(k,l,t,o=[],r=1)=>({k,l,t,o,r});
 const PT={
-SA:{n:'Savings Account',t:[['debit','Debit Card Required']],f:[f('bdo','BDO Code','text'),f('type','Product Type','s',['Regular Savings','Youth Savings','Senior Citizen Savings']),f('cur','Currency','s',CUR),f('dep','Initial Deposit (LKR)','number'),f('op','Operating Instructions','s',OPS),f('src','Source of Funds','s',SRC),f('rem','Remarks (Optional)','ta',[],0)]},
+SA:{n:'Savings Account',t:[],f:[f('bdo','BDO Code','text'),f('type','Product Type','s',['Regular Savings','Youth Savings','Senior Citizen Savings']),f('cur','Currency','s',CUR),f('dep','Initial Deposit (LKR)','number'),f('op','Operating Instructions','s',OPS),f('src','Source of Funds','s',SRC),f('rem','Remarks (Optional)','ta',[],0)]},
 CA:{n:'Current Account',t:[],f:[f('type','Product Type','s',['Regular Current','Business Current','Premium Current']),f('cur','Currency','s',CUR),f('dep','Initial Deposit (LKR)','number'),f('op','Operating Instructions','s',OPS),f('src','Source of Funds','s',SRC),f('crib','CRIB Status','s',STAT),f('tin','Income Tax Number Status','s',STAT),f('rem','Remarks (Optional)','ta',[],0)]},
 FD:{n:'Fixed Deposit',t:[['renew','Auto Renewal']],f:[f('fund','Funding Account','s',FUND),f('amt','Deposit Amount (LKR)','number'),f('tenure','Tenure','s',['1 Month','3 Months','6 Months','12 Months','24 Months','36 Months']),f('freq','Interest Payment Frequency','s',['Monthly','Quarterly','At Maturity']),f('mat','Maturity Instructions','s',['Renew Principal + Interest','Renew Principal Only','Credit to Account']),f('src','Source of Funds','s',SRC),f('rem','Remarks (Optional)','ta',[],0)]},
 IP:{n:'Investment Plan',t:[['autoDebit','Auto Debit Required']],f:[f('fund','Funding Account','s',FUND),f('type','Product Type','s',['Education Plan','Retirement Plan','Wealth Builder']),f('amt','Investment Amount (LKR)','number'),f('freq','Investment Frequency','s',['Monthly','Quarterly','Annually']),f('period','Investment Period','s',['1 Year','3 Years','5 Years','10 Years','15 Years']),f('target','Target Amount (LKR)','number'),f('tdate','Target Date','date'),f('rem','Remarks (Optional)','ta',[],0)]}};
 const ORDER=['SA','CA','FD','IP'],RR=new Set(['CA.iType']);
-const MAND=['Customer Photo','Customer Signature','Customer Signing Video'];
-const HINT={'Customer Photo':'PNG or JPG, up to 10MB','Customer Signature':'PNG or JPG, up to 10MB','Customer Signing Video':'MP4 or MOV, up to 50MB','Introducer Letter':'PDF, PNG or JPG, up to 10MB'};
 const emptyD=()=>({nic:'',found:null,name:'',addr:'',cif:'',rel:'',pct:''});
-const S={sel:['SA'],v:{'SA.cur':'LKR','CA.cur':'LKR','SA.cStmt':'E-Statement','SA.cFreq':'Monthly','CA.cStmt':'E-Statement','CA.cFreq':'Monthly'},
-nom:{SA:{d:emptyD(),rows:[]},CA:{d:emptyD(),rows:[]}},old:{FD:[{id:1}],IP:[{id:2}]},uid:3,docs:[],intro:null,tally:{res:'',cm:''},pend:null};
+const S={sel:['SA'],v:{'SA.cur':'LKR','CA.cur':'LKR'},
+nom:{SA:{d:emptyD(),rows:[]},CA:{d:emptyD(),rows:[]}},old:{FD:[{id:1}],IP:[{id:2}]},uid:3,docs:[],intro:null,pend:null};
 const docOf=t=>S.docs.find(d=>d.type===t);
 
 /* ---------- field helpers ---------- */
@@ -411,7 +400,6 @@ else c=`<input class="input" type="${s.t}"${s.t==='number'?' min="0" step="0.01"
 return `<div class="field${s.t==='ta'?' full':''}"><label for="f-${id}">${s.l}${s.r?' <span class="required-mark">*</span>':''}</label>${c}</div>`}
 const yn=(key,l)=>{const v=S.v[key]||'no';return `<div class="field"><span class="label-text">${l}</span><div class="controls-row">${['yes','no'].map(x=>`<label class="radio"><input type="radio" name="${key}" data-yn="${key}" value="${x}"${v===x?' checked':''}> ${x==='yes'?'Yes':'No'}</label>`).join('')}</div></div>`};
 const sel=(attr,o,v)=>`<select class="select" ${attr}><option value="">Select...</option>${o.map(x=>`<option${x===v?' selected':''}>${x}</option>`).join('')}</select>`;
-const ready=p=>PT[p].f.filter(s=>s.r).every(s=>String(S.v[p+'.'+s.k]||'').trim());
 
 /* ---------- introducer (current account) ---------- */
 function introHTML(){const t=S.v['CA.iType']||'';
@@ -438,37 +426,21 @@ return `<h4 class="sub">Nominee Details</h4><div class="field-grid">${yn(p+'.nom
 function nomOld(p){const l=S.old[p],on=S.v[p+'.nomreq']==='yes';
 return `<h4 class="sub">Nominee Details</h4><div class="field-grid">${yn(p+'.nomreq','Nominee Required?')}</div><div ${on?'':'hidden'}>`+l.map(n=>`<div class="field-grid" style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)">`+[['name','Nominee Name','text'],['rel','Relationship','s'],['nic','NIC / Passport No','text'],['contact','Contact Number','tel'],['pct','Percentage (%)','number']].map(([k,lb,t])=>`<div class="field"><label>${lb} <span class="required-mark">*</span></label>${t==='s'?sel(`data-no="${p}.${n.id}.${k}"`,REL,n[k]):`<input class="input" type="${t}" data-no="${p}.${n.id}.${k}" value="${esc(n[k])}">`}</div>`).join('')+(l.length>1?`<div class="field"><button class="btn btn-muted" type="button" data-act="odel" data-p="${p}" data-id="${n.id}">Remove nominee</button></div>`:'')+'</div>').join('')+`<button class="btn btn-outline" type="button" style="margin-top:12px" data-act="oadd" data-p="${p}">+ Add Another Nominee</button></div>`}
 
-/* ---------- panels & channel info ---------- */
+/* ---------- account panels ---------- */
 function panel(p){const c=PT[p];
 return `<section class="card"><div class="card-header" style="justify-content:space-between"><h2>${c.n} (${p}) Details</h2><button class="btn btn-muted" type="button" data-act="rmp" data-p="${p}" aria-label="Remove ${c.n}">✕</button></div><div class="card-body"><div class="field-grid">${c.f.map(s=>fh(p,s)).join('')}${c.t.map(([k,l])=>yn(p+'.'+k,l)).join('')}</div>${p==='CA'?introHTML():''}${p==='SA'||p==='CA'?nomNew(p):nomOld(p)}</div></section>`}
 const renderPanels=()=>{$('panels').innerHTML=S.sel.map(panel).join('')};
-function chan(p){const g=k=>S.v[`${p}.${k}`],sp=(k,l,o)=>fh(p,f(k,l,'s',o)),tx=(k,l)=>fh(p,f(k,l,'text'));
-let h=sp('cStmt','Statement Type',['E-Statement','Paper Statement']);
-if(g('cStmt')==='E-Statement')h+=sp('cFreq','E-Statement Frequency',['Monthly','Quarterly']);
-if(p==='SA'){if(g('debit')==='yes'){h+=sp('cCard','Debit Card Type',['Instant','Personalized']);if(g('cCard')==='Personalized')h+=tx('cCardName','Name to be Printed on Personalized Card');h+=sp('cBranch','Collecting Branch',BR)}else h+='<p class="auto-note">Debit card is not required, so no card details are needed.</p>'}
-else{h+=yn('CA.cheque','Cheque Book Required');if(g('cheque')==='yes')h+=tx('cChqName','Name to be Printed on Cheque Book')+sp('cLeaves','No. of Leaves',['10','20','50'])+sp('cBranch','Cheque Book Collecting Branch',BR)}
-return `<section class="card"><div class="card-header"><span>📡</span><h2>Channel Info: ${PT[p].n}</h2></div><div class="card-body"><div class="field-grid">${h}</div></div></section>`}
-let sig='';
-function renderChannels(force){const ps=S.sel.filter(p=>p==='SA'||p==='CA');
-const s=ps.map(p=>ready(p)+'|'+['debit','cStmt','cCard','cheque'].map(k=>S.v[p+'.'+k]).join()).join(';');
-if(!force&&s===sig)return;sig=s;
-$('channels').innerHTML=ps.map(p=>ready(p)?chan(p):`<section class="card"><div class="card-body"><p class="summary-note" style="margin:0">Complete all required ${PT[p].n} details above to open its Channel Info.</p></div></section>`).join('')}
 
 /* ---------- documents ---------- */
 function renderDocs(){
-$('tiles').innerHTML=MAND.map(t=>{const d=docOf(t);return `<div class="tile${d?' up':''}"><strong>${t} <span class="required-mark">*</span></strong><p class="hint">${HINT[t]}</p><p class="fname">${d?esc(d.file):'Not uploaded'}</p><div class="action-row" style="justify-content:center"><button class="btn ${d?'btn-muted':'btn-primary'}" type="button" data-act="pick" data-t="${t}">${d?'Replace':'Upload'}</button>${d?`<button class="btn btn-outline" type="button" data-act="prev" data-id="${d.id}">Preview</button>`:''}</div></div>`}).join('');
-const sg=docOf('Customer Signature');
-$('tally').innerHTML=`<h4 class="sub" style="grid-column:auto">Signature Tally</h4><div class="field-grid two" style="grid-template-columns:1fr 1fr"><div class="sigbox"><span class="label-text" style="font-size:.76rem;color:var(--muted);font-weight:600">Existing signature (BDS)</span><svg viewBox="0 0 220 70" width="100%" height="70" role="img" aria-label="Existing signature on record"><text x="10" y="46" font-family="cursive" font-style="italic" font-size="32" fill="#12233d">J. M. Perera</text></svg></div><div class="sigbox"><span class="label-text" style="font-size:.76rem;color:var(--muted);font-weight:600">Current signature (uploaded)</span>${sg?`<img src="${sg.url}" alt="Uploaded customer signature">`:'<p class="hint">Upload the customer signature to compare.</p>'}</div></div>
-<div class="controls-row" style="margin-top:12px" role="radiogroup" aria-label="Signature tally result">${[['tally','Signature tallies'],['no','Signature does not tally']].map(([v,l])=>`<label class="radio"><input type="radio" name="tally" data-tally value="${v}"${S.tally.res===v?' checked':''}> ${l}</label>`).join('')}</div>
-<div class="field" style="margin-top:12px"><label for="tally-c">Comment (tally or not)</label><textarea id="tally-c" class="input" rows="2" data-tallyc>${esc(S.tally.cm)}</textarea></div>`;
 $('doc-rows').innerHTML=S.docs.length?S.docs.map(d=>`<tr><td><strong>${esc(d.type)}</strong></td><td>${esc(d.file)}</td><td>${esc(d.on)}</td><td>${d.by}</td><td><span class="badge badge-verified">Uploaded</span></td><td><button class="btn btn-outline" type="button" data-act="prev" data-id="${d.id}">Preview</button> <button class="btn btn-muted" type="button" data-act="rmdoc" data-id="${d.id}">Remove</button></td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted)">No documents uploaded yet.</td></tr>'}
 function preview(id){const d=S.docs.find(x=>x.id===id);if(!d)return;const m=d.mime||'',st='max-width:100%;max-height:65vh;display:block;margin:auto';
 modal(`${d.type}: ${d.file}`,m.startsWith('image/')?`<img src="${d.url}" alt="${esc(d.type)}" style="${st}">`:m.startsWith('video/')?`<video src="${d.url}" controls style="${st}"></video>`:m==='application/pdf'?`<iframe src="${d.url}" title="${esc(d.file)}" style="width:100%;height:65vh;border:0"></iframe>`:'<p>Preview is not available for this file type.</p>')}
 function pick(t,accept,other){S.pend={t,other};$('picker').accept=accept;$('picker').value='';$('picker').click()}
-function hf(file){const p=S.pend;S.pend=null;if(!file||!p)return;const t=p.t,nm=file.name.toLowerCase(),vid=t==='Customer Signing Video';
-const ok=vid?(/^video\/(mp4|quicktime)$/.test(file.type)||/\.(mp4|mov)$/.test(nm)):p.other||t==='Introducer Letter'?/\.(pdf|png|jpe?g)$/.test(nm):/\.(png|jpe?g)$/.test(nm);
-if(!ok){note(vid?'Signing video must be MP4 or MOV':'Unsupported file type for '+t);return}
-if(file.size>(vid?50:10)*1048576){note(`File is larger than ${vid?50:10}MB`);return}
+function hf(file){const p=S.pend;S.pend=null;if(!file||!p)return;const t=p.t,nm=file.name.toLowerCase();
+const ok=p.other||t==='Introducer Letter'?/\.(pdf|png|jpe?g)$/.test(nm):/\.(png|jpe?g)$/.test(nm);
+if(!ok){note('Unsupported file type for '+t);return}
+if(file.size>10*1048576){note('File is larger than 10MB');return}
 if(!p.other){const o=docOf(t);if(o)URL.revokeObjectURL(o.url);S.docs=S.docs.filter(d=>d.type!==t)}
 S.docs.push({id:S.uid++,type:t,file:file.name,url:URL.createObjectURL(file),mime:file.type||(/\.pdf$/.test(nm)?'application/pdf':''),on:new Date().toLocaleString('en-US',{month:'numeric',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}),by:'U12345'});
 renderDocs();if(t==='Introducer Letter')renderPanels();note(t+' uploaded')}
@@ -477,18 +449,16 @@ renderDocs();if(t==='Introducer Letter')renderPanels();note(t+' uploaded')}
 document.addEventListener('input',e=>{const t=e.target,d=t.dataset;
 if(d.v)S.v[d.v]=t.value;
 else if(d.nd){const[p,k]=d.nd.split('.');S.nom[p].d[k]=t.value}
-else if(d.no){const[p,id,k]=d.no.split('.'),n=S.old[p].find(x=>x.id==id);if(n)n[k]=t.value}
-else if(d.tallyc!==undefined)S.tally.cm=t.value});
+else if(d.no){const[p,id,k]=d.no.split('.'),n=S.old[p].find(x=>x.id==id);if(n)n[k]=t.value}});
 document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
 if(t.id==='picker')return hf(t.files[0]);
-if(d.cp){S.sel=ORDER.filter(p=>p===d.cp?t.checked:S.sel.includes(p));renderPanels();return renderChannels(true)}
-if(d.tally!==undefined){S.tally.res=t.value;return}
-if(d.yn){S.v[d.yn]=t.value;return /nomreq/.test(d.yn)?renderPanels():renderChannels()}
-if(d.v){S.v[d.v]=t.value;if(d.rr!==undefined)renderPanels();renderChannels()}});
+if(d.cp){S.sel=ORDER.filter(p=>p===d.cp?t.checked:S.sel.includes(p));renderPanels();return}
+if(d.yn){S.v[d.yn]=t.value;if(/nomreq/.test(d.yn))renderPanels();return}
+if(d.v){S.v[d.v]=t.value;if(d.rr!==undefined)renderPanels()}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const d=b.dataset,p=d.p;
 switch(d.act){
-case 'rmp':S.sel=S.sel.filter(x=>x!==p);renderChoices();renderPanels();renderChannels(true);break;
-case 'pick':pick(d.t,d.t==='Customer Signing Video'?'.mp4,.mov,video/mp4,video/quicktime':d.t==='Introducer Letter'?'.pdf,.png,.jpg,.jpeg':'image/png,image/jpeg');break;
+case 'rmp':S.sel=S.sel.filter(x=>x!==p);renderChoices();renderPanels();break;
+case 'pick':pick(d.t,d.t==='Introducer Letter'?'.pdf,.png,.jpg,.jpeg':'image/png,image/jpeg');break;
 case 'pickother':pick('Other: '+($('od-name').value.trim()||'Other document'),'.pdf,.png,.jpg,.jpeg',1);break;
 case 'prev':preview(+d.id);break;
 case 'rmdoc':{const x=S.docs.find(y=>y.id===+d.id);if(x)URL.revokeObjectURL(x.url);S.docs=S.docs.filter(y=>y.id!==+d.id);renderDocs();if(x&&x.type==='Introducer Letter')renderPanels();break}
@@ -509,13 +479,13 @@ if(!S.sel.length)return 'Select at least one account type to open';
 for(const p of S.sel){const m=PT[p].f.find(s=>s.r&&!String(S.v[p+'.'+s.k]||'').trim());if(m)return `${PT[p].n}: ${m.l} is required`;
 if(S.v[p+'.nomreq']==='yes'){const t=p==='SA'||p==='CA'?S.nom[p].rows.reduce((a,r)=>a+r.pct,0):S.old[p].reduce((a,n)=>a+(+n.pct||0),0);if(Math.round(t*100)!==10000)return `${PT[p].n}: nominee percentages must total 100%`}
 if(p==='FD'||p==='IP'){const a=ACC.find(x=>x.no===(S.v[p+'.fund']||'').split(' ')[0]);if(a&&+S.v[p+'.amt']>a.bal)return `${PT[p].n}: amount exceeds the funding account balance`}}
-if(MAND.some(t=>!docOf(t)))return 'Upload the customer photo, signature and signing video';return ''}
+return ''}
 /* Save the selected products so the Risk Analysis tab can load them automatically */
 const saveSel=()=>{try{sessionStorage.setItem('ub.selectedProducts',JSON.stringify(S.sel))}catch(e){}};
-$('next').onclick=()=>{const m=ENFORCE_RULES?check():'';if(m)return note(m);saveSel();location.href=PAGES.risk};
+$('next').onclick=()=>{const m=ENFORCE_RULES?check():'';if(m)return note(m);saveSel();location.href=PAGES.channels};
 $('prev').onclick=()=>location.href=PAGES.aml;$('draft').onclick=()=>note('Draft saved');
-const STEPS=['CIF Details','AML & PEP Check','Account Information','Risk Analysis','Banking Consent Details'],
-LINK={0:'cif',1:'aml',3:'risk'};
+const STEPS=['CIF Details','AML & PEP Check','Account Information','Channels & Cards','Risk Analysis','Banking Consent Details'],
+LINK={0:'cif',1:'aml',3:'channels',4:'risk'};
 
 $('steps').innerHTML=STEPS.map((s,i)=>{
   const done=i<2;
@@ -534,6 +504,6 @@ $('steps').onclick=e=>{
 };
 function renderChoices(){$('choices').innerHTML=ORDER.map(p=>`<label class="choice"><input type="checkbox" data-cp="${p}"${S.sel.includes(p)?' checked':''}>${PT[p].n} <span class="hint" style="margin:0">(${p})</span></label>`).join('')}
 $('acc-rows').innerHTML=ACC.map(a=>`<tr><td><strong>${a.no}</strong></td><td>John Michael Perera</td><td>${a.type}</td><td>LKR</td><td style="text-align:right">${money(a.bal)}</td><td><span class="badge badge-verified" style="background:var(--green-tint);color:var(--green)">Active</span></td><td>Main Branch (001)</td></tr>`).join('');
-renderChoices();renderPanels();renderChannels(true);renderDocs();
+renderChoices();renderPanels();renderDocs();
 </script>
 </body></html>

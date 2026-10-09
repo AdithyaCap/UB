@@ -267,14 +267,14 @@ if (LOGO_SRC) { const l = document.getElementById('logo'); l.onerror = () => { l
 
 const $ = i => document.getElementById(i);
 
-/* Tab order: Risk Analysis is tab 4, Account Information is tab 5, Banking Consent Details is tab 6 (Tax Details is not shown here) */
-const STEPS = ["CIF Details","AML & PEP Check","Account Information","Risk Analysis","Banking Consent Details"];
+/* Tab order: Channels & Cards is tab 4, Risk Analysis is tab 5, Banking Consent Details is tab 6 */
+const STEPS = ["CIF Details","AML & PEP Check","Account Information","Channels & Cards","Risk Analysis","Banking Consent Details"];
 const PAGE_LINKS = {
   cif: "./CifDetailsTab%201.html", aml: "./AmlPepCheckTab%203.html",
-  account: "./AccountInformationTab%204.html", risk: "", consent: "./BankingConsentTab%206.html"
+  account: "./AccountInformationTab%204.html", channels: "./channels-cards.html", risk: "", consent: "./BankingConsentTab%206.html"
 };
-const STEP_PAGES = [PAGE_LINKS.cif, PAGE_LINKS.aml, PAGE_LINKS.account, PAGE_LINKS.risk, PAGE_LINKS.consent];
-const CURRENT_STEP = 3;
+const STEP_PAGES = [PAGE_LINKS.cif, PAGE_LINKS.aml, PAGE_LINKS.account, PAGE_LINKS.channels, PAGE_LINKS.risk, PAGE_LINKS.consent];
+const CURRENT_STEP = 4;
 
 const PRODUCTS = [
   {code:"SA",name:"Savings Account",score:1},
@@ -393,7 +393,7 @@ document.querySelectorAll('[data-scenario]').forEach(btn=>btn.addEventListener('
 }));
 $('remarks').addEventListener('input',e=>$('remarkCount').textContent = e.target.value.length);
 $('next').onclick = nextStep;
-$('prev').onclick = ()=>location.href = PAGE_LINKS.account;
+$('prev').onclick = ()=>location.href = PAGE_LINKS.channels;
 $('draft').onclick = ()=>toast('Draft saved');
 $('logout').onclick = ()=>toast('Logout selected');
 
